@@ -43,7 +43,7 @@ Injecting the 3D prior of SURF-GAN into StyleGAN.
 <img src="./assets/3d_vid3.gif" width="500"> <br>
 
 ### + Style
-It is comatible with numerous StyleGAN-based techniques, e.g., [Toonifying](https://github.com/justinpinkney/toonify). <br>
+Also, it is compatible with numerous StyleGAN-based techniques, e.g., [Toonifying](https://github.com/justinpinkney/toonify). <br>
 <img src="./assets/3d_vid4.gif" width="600"> <br>
 <img src="./assets/3d_vid5.gif" width="600"> <br>
 
