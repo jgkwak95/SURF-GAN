@@ -53,7 +53,7 @@ Also, it is compatible with numerous StyleGAN-based techniques, e.g., [Toonifyin
 ### Notice
 
 The code for 3D-controllable StyleGAN will not be released. <br>
-But the code for the frontalization part will be uploaded to [here](https://github.com/jgkwak95/Character-frontalization).
+Instead, the code for the frontalization part will be uploaded to [here](https://github.com/jgkwak95/Character-frontalization).
 
 
 ### Limitation 
