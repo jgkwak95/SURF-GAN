@@ -32,7 +32,7 @@ Instructions will be updated. <br>
 
 ## 3D-Controllable StyleGAN
 
-Injecting the 3D prior of SURF-GAN into SyleGAN.
+Injecting the 3D prior of SURF-GAN into StyleGAN.
 
 
 <img src="./assets/3d_stylegan.png" width="500"> <br>
