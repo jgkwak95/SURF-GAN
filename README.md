@@ -22,7 +22,7 @@ Camera control + Semantic attribute editing (trained on 64x64 CelebA and rendere
 SURF-GAN can discover and control semantic attributes in an unsupervised manner. <br>
 
 ### Architecture 
-<img src="https://jgkwak95.github.io/surfgan/assets/surfgan.png" width="600"> <br>
+<img src="https://jgkwak95.github.io/surfgan/assets/surfgan.png" width="700"> <br>
 
 <!-- ### Envs -->
 <!-- ### Training -->
