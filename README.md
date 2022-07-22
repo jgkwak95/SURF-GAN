@@ -13,6 +13,7 @@
 
 
 This repository includes the official Pytorch implementation of SURF-GAN
+SURF-GAN is a NeRF-based 3D-aware GAN, which is able to discover and control semantic attributes.
 
 
 ## SURF-GAN 
