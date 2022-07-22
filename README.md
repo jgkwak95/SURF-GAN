@@ -4,7 +4,10 @@
 
 ### [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 
-###  Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis, ECCV 2022<br>
+###  "Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis"<br>  
+
+### ECCV 2022 
+
 
 <br>
 
