@@ -4,9 +4,8 @@
 
 ### [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 
-###  "Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis"<br>
-[Jeong-gi Kwak](https://jgkwak95.github.io/), Yuanming Li, Dongsik Yoon, Donghyeon Kim, David Han, Hanseok Ko <br>
-*European Conference on Computer Vision (ECCV), 2022*
+###  Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis, ECCV 2022<br>
+
 <br>
 
 
