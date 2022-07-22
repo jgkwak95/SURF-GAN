@@ -3,17 +3,16 @@
 <img src="./assets/thumbnail.png" width="800">
 
 ### [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
-
-###  "Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis"<br>  
-
-### ECCV 2022 
-
+<br>
+  
+** Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis **
+[Jeong-gi Kwak](https://jgkwak95.github.io/), Yuanming Li, Dongsik Yoon, Donghyeon Kim, David Han, Hanseok Ko<br>
+** ECCV 2022 ** <br>
 
 <br>
 
-
-This repository includes the official Pytorch implementation of SURF-GAN
-SURF-GAN is a NeRF-based 3D-aware GAN, which is able to discover and control semantic attributes.
+This repository includes the official Pytorch implementation of SURF-GAN. <br>
+SURF-GAN is a NeRF-based 3D-aware GAN, which is able to discover and control semantic attributes. <br>
 
 
 ## SURF-GAN 
