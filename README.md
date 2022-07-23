@@ -1,6 +1,6 @@
 ## Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis
 
-<img src="./assets/thumbnail.png" width="800">
+<img src="./assets/thumbnail.png" width="90%">
 
 ### [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 <br>
@@ -43,14 +43,14 @@ Injecting the 3D prior of SURF-GAN into StyleGAN.
 <img src="./assets/3d_stylegan.png" width="50%"> <br>
 
 ### Video
-<img src="./assets/3d_vid1.gif" width="50%"> <br>
-<img src="./assets/3d_vid2.gif" width="50%"> <br>
-<img src="./assets/3d_vid3.gif" width="50%"> <br>
+<img src="./assets/3d_vid1.gif" width="60%"> <br>
+<img src="./assets/3d_vid2.gif" width="60%"> <br>
+<img src="./assets/3d_vid3.gif" width="60%"> <br>
 
 ### + Style
 Also, it is compatible with numerous StyleGAN-based techniques, e.g., [Toonifying](https://github.com/justinpinkney/toonify). <br>
-<img src="./assets/3d_vid4.gif" width="50%"> <br>
-<img src="./assets/3d_vid5.gif" width="50%"> <br>
+<img src="./assets/3d_vid4.gif" width="70%"> <br>
+<img src="./assets/3d_vid5.gif" width="70%"> <br>
 
 
 
