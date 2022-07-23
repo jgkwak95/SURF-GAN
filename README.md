@@ -40,7 +40,7 @@ Instructions will be updated. <br>
 Injecting the 3D prior of SURF-GAN into StyleGAN.
 
 
-<img src="./assets/3d_stylegan.png" width="50%"> <br>
+<img src="./assets/3d_stylegan.png" width="60%"> <br>
 
 ### Video
 <img src="./assets/3d_vid1.gif" width="60%"> <br>
