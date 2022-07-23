@@ -24,7 +24,7 @@ Camera control + Semantic attribute editing (trained on 64x64 CelebA and rendere
 SURF-GAN can discover and control semantic attributes in an unsupervised manner. <br>
 
 ### Architecture 
-<img src="https://jgkwak95.github.io/surfgan/assets/surfgan.png" width="700"> <br>
+<img src="https://jgkwak95.github.io/surfgan/assets/surfgan.png" width="70%"> <br>
 
 <!-- ### Envs -->
 <!-- ### Training -->
@@ -40,24 +40,24 @@ Instructions will be updated. <br>
 Injecting the 3D prior of SURF-GAN into StyleGAN.
 
 
-<img src="./assets/3d_stylegan.png" width="500"> <br>
+<img src="./assets/3d_stylegan.png" width="50%"> <br>
 
 ### Video
-<img src="./assets/3d_vid1.gif" width="500"> <br>
-<img src="./assets/3d_vid2.gif" width="500"> <br>
-<img src="./assets/3d_vid3.gif" width="500"> <br>
+<img src="./assets/3d_vid1.gif" width="50%"> <br>
+<img src="./assets/3d_vid2.gif" width="50%"> <br>
+<img src="./assets/3d_vid3.gif" width="50%"> <br>
 
 ### + Style
 Also, it is compatible with numerous StyleGAN-based techniques, e.g., [Toonifying](https://github.com/justinpinkney/toonify). <br>
-<img src="./assets/3d_vid4.gif" width="600"> <br>
-<img src="./assets/3d_vid5.gif" width="600"> <br>
+<img src="./assets/3d_vid4.gif" width="50%"> <br>
+<img src="./assets/3d_vid5.gif" width="50%"> <br>
 
 
 
 ### Limitation 
 Our 3D controllable StyleGAN is not based on 3D representations such as mesh or NeRF, so as you can see when it comes to video generation, it shows the problem of “texture sticking” pointed out in [StyleGAN3](https://nvlabs.github.io/stylegan3/) (especially in hair and beard). That is one of the most noticable artifacts in GAN generated videos. We expect this to be mitigated with StyleGAN3. <br>
-<img src="./assets/3d_vid6.gif" width="500"> <br>
-<img src="./assets/3d_vid7.gif" width="500"> <br>
+<img src="./assets/3d_vid6.gif" width="50%"> <br>
+<img src="./assets/3d_vid7.gif" width="50%"> <br>
 
 
 
@@ -81,5 +81,4 @@ Our 3D controllable StyleGAN is not based on 3D representations such as mesh or 
 -  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow).  
 -  We used [pSp encoder](https://github.com/eladrich/pixel2style2pixel) ([e4e](https://github.com/omertov/encoder4editing) also works) and [StyleGAN2-pytorch](https://github.com/rosinality/stylegan2-pytorch) to build 3D-controllable StyleGAN.  
 
-Thanks for their wonderful works!
 
