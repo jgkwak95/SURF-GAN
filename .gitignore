@@ -1,5 +1,7 @@
 lmdb
 
+assets
+
 __pycache__/
 
 .idea/*.xml
@@ -9,6 +11,8 @@ __pycache__/
 dataset
 
 CelebA
+
+FFHQ
 
 discriminator/__pycache__
 

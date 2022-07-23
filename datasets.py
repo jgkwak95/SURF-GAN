@@ -25,7 +25,7 @@ from torch.utils.data import Dataset
 class CelebA(Dataset):
     """CelebA Dataset"""
 
-    def __init__(self, dataset_path='/home/ispl/PycharmProjects/dataset/img_align_celeba/*.jpg', img_size=64, **kwargs):
+    def __init__(self, dataset_path='./datasets/img_align_celeba/*.jpg', img_size=64, **kwargs):
         super().__init__()
 
         self.data = glob.glob(dataset_path)
@@ -45,7 +45,7 @@ class CelebA(Dataset):
 class FFHQ(Dataset):
     """FFHQ Dataset"""
 
-    def __init__(self, dataset_path, img_size, **kwargs):
+    def __init__(self, dataset_path= './datasets/ffhq/images256x256/*/*.png', img_size=64, **kwargs):
         super().__init__()
 
         self.data = glob.glob(dataset_path)

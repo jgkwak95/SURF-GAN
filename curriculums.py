@@ -91,7 +91,7 @@ CelebA = {
    # int(300e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
     int(300e3):{},
 
-    'dataset_path': '/home/ispl/PycharmProjects/dataset/img_align_celeba/*.jpg',
+    'dataset_path': './datasets/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -130,7 +130,7 @@ CelebA_single = {
     # int(300e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
     int(300e3): {},
 
-    'dataset_path': '/home/ispl/PycharmProjects/dataset/img_align_celeba/*.jpg',
+    'dataset_path': '/datasets/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -162,7 +162,7 @@ CelebA_single = {
 }
 
 ###-----------------
-FFHQ_eigen = {
+FFHQ_single = {
 
     0: {'batch_size': 96, 'num_steps': 12, 'img_size': 32, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
     int(80e3): {'batch_size': 28, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
@@ -170,7 +170,7 @@ FFHQ_eigen = {
     int(300e3): {},
 
 
-    'dataset_path' : './dataset/ffhq/images256x256/*/*.png',
+    'dataset_path' : './datasets/ffhq/images256x256/*/*.png',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -208,7 +208,7 @@ CelebA_original = {
     0: {'batch_size': 28 * 2, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 2e-4},
     int(200e3): {},
 
-    'dataset_path': '/home/ispl/PycharmProjects/dataset/img_align_celeba/*.jpg',
+    'dataset_path': './datasets/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,

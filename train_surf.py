@@ -421,7 +421,7 @@ if __name__ == '__main__':
     parser.add_argument('--output_dir', type=str, default='CelebA')
     parser.add_argument('--load_dir', type=str, default='')
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
-    parser.add_argument('--eval_freq', type=int, default=10)
+    parser.add_argument('--eval_freq', type=int, default=1000)
     parser.add_argument('--port', type=str, default='12355')
     parser.add_argument('--set_step', type=int, default=None)
     parser.add_argument('--model_save_interval', type=int, default=5000)
