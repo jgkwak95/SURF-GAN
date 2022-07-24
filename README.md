@@ -1,6 +1,6 @@
 ## Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis
 
-<img src="./assets/thumbnail.png" width="90%">
+<img src="https://user-images.githubusercontent.com/67986601/180637964-d95b3228-bbf3-4dc5-8d30-7f18630ef858.png" width="90%">
 
 ## [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 <br>
