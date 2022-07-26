@@ -355,7 +355,7 @@ class SinedLayer_noise(nn.Module):
 
     def forward(self, x, noise):
         x = self.layer(x)
-        x = x + noise
+        x = x + noise * 0.01
         x = self.sine(x)
         # freq = freq.unsqueeze(1).expand_as(x)
         # phase_shift = phase_shift.unsqueeze(1).expand_as(x)
@@ -522,7 +522,7 @@ class SURFSIREN(nn.Module):
 
 
         zs = z_all[:, :-1, :]
-        zn = noise * 0.01
+        zn = noise
 
         x = self.first_layer(x, zn)
 

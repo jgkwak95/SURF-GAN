@@ -42,6 +42,7 @@ Curriculum Schema:
     last_back: Flag to fill in background color with last sampled color on ray.
 """
 
+
 import math
 
 def next_upsample_step(curriculum, current_step):
@@ -87,11 +88,11 @@ CelebA = {
 
 
     0: {'batch_size': 96, 'num_steps': 12, 'img_size': 32, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
-    int(80e3): {'batch_size': 28, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-   # int(300e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-    int(300e3):{},
+    int(60e3): {'batch_size': 28, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
+   int(160e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
+    int(300e3): {},
 
-    'dataset_path': './datasets/img_align_celeba/*.jpg',
+    'dataset_path': 'dataset/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -125,12 +126,11 @@ CelebA = {
 ###-----------------
 CelebA_single = {
 
-    0: {'batch_size': 48, 'num_steps': 12, 'img_size': 32, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
-    int(80e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 64, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-    # int(300e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-    int(300e3): {},
+    0: {'batch_size': 56, 'num_steps': 12, 'img_size': 32, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
+    int(60e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 64, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
+    int(200e3): {},
 
-    'dataset_path': '/datasets/img_align_celeba/*.jpg',
+    'dataset_path': 'dataset/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -164,13 +164,11 @@ CelebA_single = {
 ###-----------------
 FFHQ_single = {
 
-    0: {'batch_size': 96, 'num_steps': 12, 'img_size': 32, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
-    int(80e3): {'batch_size': 28, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-    int(180e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
-    int(300e3): {},
+    0: {'batch_size': 56, 'num_steps': 12, 'img_size': 32, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
+    int(80e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
+    int(300e3): {'batch_size': 6, 'num_steps': 12, 'img_size': 128, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
 
-
-    'dataset_path' : './datasets/ffhq/images256x256/*/*.png',
+    'dataset_path' : 'dataset/ffhq/images256x256/*/*.png',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,
@@ -208,7 +206,7 @@ CelebA_original = {
     0: {'batch_size': 28 * 2, 'num_steps': 12, 'img_size': 64, 'batch_split': 2, 'gen_lr': 6e-5, 'disc_lr': 2e-4},
     int(200e3): {},
 
-    'dataset_path': './datasets/img_align_celeba/*.jpg',
+    'dataset_path': 'dataset/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,

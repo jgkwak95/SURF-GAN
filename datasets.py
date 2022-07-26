@@ -9,14 +9,7 @@ import torchvision.transforms as transforms
 import torchvision
 import glob
 import PIL
-import random
-import math
-import pickle
-import numpy as np
 
-from io import BytesIO
-
-import lmdb
 from PIL import Image
 from torch.utils.data import Dataset
 
@@ -25,7 +18,8 @@ from torch.utils.data import Dataset
 class CelebA(Dataset):
     """CelebA Dataset"""
 
-    def __init__(self, dataset_path='./datasets/img_align_celeba/*.jpg', img_size=64, **kwargs):
+    def __init__(self, dataset_path, img_size, **kwargs):
+
         super().__init__()
 
         self.data = glob.glob(dataset_path)
@@ -45,7 +39,7 @@ class CelebA(Dataset):
 class FFHQ(Dataset):
     """FFHQ Dataset"""
 
-    def __init__(self, dataset_path= './datasets/ffhq/images256x256/*/*.png', img_size=64, **kwargs):
+    def __init__(self, dataset_path, img_size, **kwargs):
         super().__init__()
 
         self.data = glob.glob(dataset_path)

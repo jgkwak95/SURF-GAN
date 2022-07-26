@@ -4,7 +4,8 @@ import numpy as np
 import os
 import torch
 import curriculums
-import tqdm
+# import tqdm
+from tqdm import tqdm
 from PIL import Image
 
 
@@ -31,16 +32,17 @@ def sample_noise(shape,  device):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--num_id', type=int, default=8)
+
     parser.add_argument('--experiment', type=str, required=True)
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=256)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA')
+    parser.add_argument('--num_id', type=int, default=8)
+    parser.add_argument('--intermediate_points', type=int, default=9)
     parser.add_argument('--specific_ckpt', type=str, default=None)
     parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--mode', type=str, default='yaw')
-    parser.add_argument('--intermediate_points', type=int, default=9)
     parser.add_argument('--use_trunc', type=bool, default=True)
     parser.add_argument('--depth_map', action='store_true')
 

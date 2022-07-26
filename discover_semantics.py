@@ -1,13 +1,10 @@
 import argparse
 import math
-import glob
 import numpy as np
-import sys
 import os
 import torch
 import curriculums
 
-from torchvision.utils import save_image
 from PIL import Image
 
 
@@ -25,23 +22,23 @@ def sample_latents(batch: int, truncation=1.0):
 
 def sample_noise(shape,  device):
 
-    # zn = torch.randn(shape, device=device)
-    zn = torch.zeros_like(shape, device=device) # for inference
+    zn = torch.randn(shape, device=device)
+    # zn = torch.zeros_like(shape, device=device) # no noise
     return zn
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
 
-    parser.add_argument('--num_id', type=int, default=8)
+
     parser.add_argument('--experiment', type=str, required=True)
-    parser.add_argument('--max_batch_size', type=int, default=2400000)
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=256)
-    parser.add_argument('--ray_step_multiplier', type=int, default=2)
-    parser.add_argument('--curriculum', type=str, default='CelebA')
+    parser.add_argument('--ray_step_multiplier', type=int, default=4)
+    parser.add_argument('--curriculum', type=str, default='CelebA_single')
+    parser.add_argument('--specific_ckpt', type=str, default=None)
     parser.add_argument('--psi', type=float, default=0.7)
-    parser.add_argument('--traverse_samples', type=int, default=20)
+    parser.add_argument('--num_id', type=int, default=8)
     parser.add_argument('--intermediate_points', type=int, default=9)
     parser.add_argument('--traverse_range', type=float, default=3.0)
     parser.add_argument('--use_trunc', type=bool, default=True)
@@ -68,8 +65,11 @@ if __name__ == '__main__':
     curriculum['feat_dim'] = 512
     curriculum = {key: value for key, value in curriculum.items() if type(key) is str}
 
+    if opt.specific_ckpt is not None:
+        g_path = f'./{opt.experiment}/{opt.specific_ckpt}'
+    else:
+        g_path =  f'./{opt.experiment}/generator.pth'
 
-    g_path =  f'./{opt.experiment}/generator.pth'
     ##
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
@@ -84,7 +84,6 @@ if __name__ == '__main__':
         os.makedirs(save_dir)
 
 
-    traverse_samples = opt.traverse_samples
     traverse_range = opt.traverse_range
     intermediate_points = opt.intermediate_points
     num_id = opt.num_id

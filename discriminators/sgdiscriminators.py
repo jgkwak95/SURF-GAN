@@ -342,6 +342,7 @@ class Discriminator(nn.Module):
         self.final_layer = nn.Conv2d(400, 1 + 2, 2)
         self.img_size_to_layer = {2: 7, 4: 6, 8: 5, 16: 4, 32: 3, 64: 2, 128: 1, 256: 0}
 
+
     def forward(self, input, alpha, options=None, **kwargs):
         start = self.img_size_to_layer[input.shape[-1]]
         x = self.fromRGB[start](input)

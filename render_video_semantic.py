@@ -32,26 +32,24 @@ def sample_latents(batch: int, truncation=1.0):
 
 def sample_noise(shape,  device, truncation=1.0):
 
-    zs = torch.randn(shape, device=device)
-    if truncation < 1.0:
-
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-        zs *= 0
-    return zs
+    # zn = torch.randn(shape, device=device)
+    zn = torch.zeros(shape, device=device) # for inference
+    return zn
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int, required=True)
-    parser.add_argument('--num_img', type=int, default=8)
+    parser.add_argument('--seed', type=int, default=22)
     parser.add_argument('--experiment', type=str, required=True)
-    parser.add_argument('--max_batch_size', type=int, default=2400000)
     parser.add_argument('--lock_view_dependence', action='store_true')
-    parser.add_argument('--image_size', type=int, default=256)
+    parser.add_argument('--image_size', type=int, default=128)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
+    parser.add_argument('--specific_ckpt', type=str, default=None)
     parser.add_argument('--psi', type=float, default=0.7)
-    parser.add_argument('--traverse_range', type=float, default=4.0)
+    parser.add_argument('--traverse_range', type=float, default=6.0)
     parser.add_argument('--use_trunc', type=bool, default=True)
+    parser.add_argument('--L', type=int, required=True)
+    parser.add_argument('--D', type=int, required=True)
     parser.add_argument('--num_frames', type=int, default=100)
     parser.add_argument('--mode', type=str, default='circle')
     opt = parser.parse_args()
@@ -75,8 +73,10 @@ if __name__ == '__main__':
     curriculum['nerf_noise'] = 0
     curriculum = {key: value for key, value in curriculum.items() if type(key) is str}
 
-
-    g_path =  f'./{opt.experiment}/generator.pth'
+    if opt.specific_ckpt is not None:
+        g_path = f'./{opt.experiment}/{opt.specific_ckpt}'
+    else:
+        g_path =  f'./{opt.experiment}/generator.pth'
 
     ##
     generator = torch.load(g_path, map_location=torch.device(device))
@@ -86,14 +86,12 @@ if __name__ == '__main__':
     generator.set_device(device)
     generator.eval()
 
-    save_dir = f'./result/{opt.experiment}/pose'
+    save_dir = f'./result/{opt.experiment}/vid'
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    traverse_samples = opt.traverse_samples
     traverse_range = opt.traverse_range
-    intermediate_points = opt.intermediate_points
     num_frames = opt.num_frames
     mode = opt.mode
     truncation = opt.psi
@@ -177,8 +175,8 @@ if __name__ == '__main__':
 
     # Target Layer and Dim (L#D#)
     ####
-    i_layer = 1
-    i_dim = 2
+    i_layer = opt.L
+    i_dim = opt.D
     #####
 
     frames = []

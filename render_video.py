@@ -1,11 +1,8 @@
 import argparse
 import math
 import os
-
-from torchvision.utils import save_image
-
 import torch
-import numpy as np
+
 from PIL import Image
 from tqdm import tqdm
 import numpy as np
@@ -32,19 +29,19 @@ def sample_latents(batch: int, truncation=1.0):
 def sample_noise(shape,  device):
 
     # zn = torch.randn(shape, device=device)
-    zn = torch.zeros_like(shape, device=device) # for inference
+    zn = torch.zeros(shape, device=device) # for inference
 
     return zn
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--seed', type=int, default=22)
-    parser.add_argument('--experiment', type=str, default='CelebA')
-    parser.add_argument('--max_batch_size', type=int, default=2400000)
+    parser.add_argument('--experiment', type=str, required=True)
     parser.add_argument('--lock_view_dependence', action='store_true')
-    parser.add_argument('--image_size', type=int, default=256)
+    parser.add_argument('--image_size', type=int, default=128)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
-    parser.add_argument('--curriculum', type=str, default='CelebA')
+    parser.add_argument('--curriculum', type=str, default='CelebA_single')
+    parser.add_argument('--specific_ckpt', type=str, default=None)
     parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--use_trunc', type=bool, default=True)
     parser.add_argument('--num_frames', type=int, default=100)
@@ -72,9 +69,10 @@ if __name__ == '__main__':
     curriculum = {key: value for key, value in curriculum.items() if type(key) is str}
 
 
-
-
-    g_path =  f'./{opt.experiment}/generator.pth'
+    if opt.specific_ckpt is not None:
+        g_path = f'./{opt.experiment}/{opt.specific_ckpt}'
+    else:
+        g_path =  f'./{opt.experiment}/generator.pth'
 
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
@@ -83,14 +81,13 @@ if __name__ == '__main__':
     generator.set_device(device)
     generator.eval()
 
-    save_dir = f'./result/{opt.experiment}/pose'
+    save_dir = f'./result/{opt.experiment}/vid'
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
     num_frames = opt.num_frames
     mode = opt.mode
-    yaw_range = 0.7
     truncation = opt.psi
 
 

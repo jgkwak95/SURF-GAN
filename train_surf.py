@@ -1,14 +1,9 @@
 import argparse
 import os
-import numpy as np
-import math
-
-from collections import deque
 
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
-import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torchvision.utils import save_image
@@ -154,7 +149,6 @@ def train(rank, world_size, opt):
         f.write('\n\n')
         f.write(str(curriculum))
 
-    torch.manual_seed(rank)
     dataloader = None
     total_progress_bar = tqdm(total = opt.n_epochs, desc = "Total progress", dynamic_ncols=True)
     total_progress_bar.update(discriminator.epoch)
@@ -390,7 +384,7 @@ def train(rank, world_size, opt):
                 if rank == 0:
                     # fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir, target_size=metadata['img_size'])
                     fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir,
-                                                    target_size=128)
+                                                    target_size=metadata['img_size'])
                 dist.barrier()
                 ema.store(generator_ddp.parameters())
                 ema.copy_to(generator_ddp.parameters())
@@ -401,9 +395,9 @@ def train(rank, world_size, opt):
                 if rank == 0:
                     # fid = fid_evaluation.calculate_fid(metadata['dataset'], generated_dir, target_size=metadata['img_size'])
                     fid = fid_evaluation.calculate_fid(metadata['dataset'], generated_dir,
-                                                       target_size=128)
+                                                       target_size=metadata['img_size'])
                     with open(os.path.join(opt.output_dir, f'fid.txt'), 'a') as f:
-                        f.write(f'\n{discriminator.step}:{fid}')
+                        f.write(f'\n{discriminator.step+1}:{fid}')
 
                 torch.cuda.empty_cache()
 
@@ -414,10 +408,11 @@ def train(rank, world_size, opt):
 
     cleanup()
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--n_epochs", type=int, default=3000, help="number of epochs of training")
-    parser.add_argument("--sample_interval", type=int, default=300, help="interval between image sampling")
+    parser.add_argument("--sample_interval", type=int, default=500, help="interval between image sampling")
     parser.add_argument('--output_dir', type=str, default='CelebA')
     parser.add_argument('--load_dir', type=str, default='')
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
@@ -430,5 +425,5 @@ if __name__ == '__main__':
     print(opt)
     os.makedirs(opt.output_dir, exist_ok=True)
     # num_gpus = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
-    num_gpus = 1
+    num_gpus = 1 # single
     mp.spawn(train, args=(num_gpus, opt), nprocs=num_gpus, join=True)

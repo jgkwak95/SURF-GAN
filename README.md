@@ -1,11 +1,11 @@
-## Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis
+# Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis
 
 <img src="https://user-images.githubusercontent.com/67986601/180637964-d95b3228-bbf3-4dc5-8d30-7f18630ef858.png" width="90%">
 
 ## [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 <br>
   
->**Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis** <br>
+>**"Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis"** <br>
 >[Jeong-gi Kwak](https://jgkwak95.github.io/), Yuanming Li, Dongsik Yoon, Donghyeon Kim, David Han, Hanseok Ko<br>
 >**ECCV 2022** <br>
 
@@ -14,22 +14,83 @@
 This repository includes the official Pytorch implementation of SURF-GAN. <br>
 
 
-## SURF-GAN 
+# SURF-GAN 
 
 SURF-GAN, which is a NeRF-based 3D-aware GAN, can discover disentangled semantic attributes in an unsupervised manner.  <br><br>
 <img src="https://user-images.githubusercontent.com/67986601/180636584-6ac7f46f-ff8f-4da1-a4b9-69e31e769909.gif" width=150> <br>
 (Tranined on 64x64 CelebA and rendered with 256x256) <br>
 
-<!-- ### Envs -->
-<!-- ### Training -->
-<!-- ### Evaluation -->
-<!-- ### Generation  -->
-<!-- ### Semantic attributes discovery -->
+## Get started
 
-### Get started
-Instructions will be updated. <br>
+- #### Clone the repo.
+```
+git clone https://github.com/jgkwak95/SURF-GAN.git
+cd SURF-GAN
+```
+- #### Create virtual environment
+```
+conda create -n surfgan python=3.7.1
+conda activate surfgan
+conda install -c pytorch-lts pytorch torchvision 
+pip install --no-cache-dir -r requirements.txt
+```
 
-## 3D-Controllable StyleGAN
+## Train SURF-GAN
+At first, look curriculum.py and specify dataset and training options.
+```
+# CelebA
+python train_surf.py --output_dir {your-exp-name} 
+		     --curriculum CelebA_single
+```
+### Pretrained model
+Pretrained model will be uploaded. 
+## Semantic attribute discovery
+Let's traverse each dimension with discovered semantics 
+```
+python discover_semantics.py  --experiment {your-exp-name}
+                              --image_size 256
+                              --ray_step_multiplier 2
+                              --num_id 9                     
+                              --traverse_range 3.0           
+                              --intermediate_points 9       
+                              --curriculum CelebA_single     
+```
+The default ckpt file to traverse is the latest file (generator.pth).
+If you want to check specific cpkt, add this in your command line, for example,
+```
+--specific_ckpt 140000_64_generator.pth
+```
+## Render video
+- #### Moving camera
+Set the mode: yaw, pitch, fov, etc.
+You can also make your trajectory. 
+```
+python render_video.py  --experiment {your-exp-name}
+                        --image_size 128
+                        --ray_step_multiplier 2
+                        --num_frames 100                         
+                        --curriculum CelebA_single  
+                        --mode yaw
+```
+
+- #### Moving camera with a specific semantic
+Choose an attribute that you want to control LiDj.
+```
+python render_video_semantic.py  --experiment {your-exp-name}
+                                 --image_size 128
+                                 --ray_step_multiplier 2
+                                 --num_frames 100      
+                                 --traverse_range 3.0
+                                 --intermediate_points      
+                                 --curriculum CelebA_single  
+                                 --mode circle
+                                 --L 2
+                                 --D 4
+```
+<br>
+<br>
+
+# 3D-Controllable StyleGAN
 
 Injecting the 3D prior of SURF-GAN into StyleGAN.
 
@@ -53,7 +114,7 @@ Also, it is compatible with numerous StyleGAN-based techniques, e.g., [Toonifyin
 
 
 ### Limitation 
-Our 3D controllable StyleGAN is not based on 3D representations such as mesh or NeRF, so as you can see when it comes to video generation, it shows the problem of “texture sticking” pointed out in [StyleGAN3](https://nvlabs.github.io/stylegan3/) (especially in hair and beard). That is one of the most noticable artifacts in GAN generated videos. We expect this to be mitigated with StyleGAN3. <br>
+3D controllable StyleGAN is not based on 3D representations such as mesh or NeRF, so as you can see when it comes to video generation, it shows the problem of “texture sticking” pointed out in [StyleGAN3](https://nvlabs.github.io/stylegan3/) (especially in hair and beard). That is one of the most noticable artifacts in GAN generated videos. We expect this to be mitigated with StyleGAN3. <br>
 <img src="https://user-images.githubusercontent.com/67986601/180636762-dfe6a900-eaeb-4b12-8b82-1fb70c06dfee.gif" width="40%"> <br>
 
 
