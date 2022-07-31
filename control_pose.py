@@ -25,7 +25,7 @@ def sample_noise(shape,  device):
 
     zn = torch.randn(shape, device=device)
     if truncation < 1.0:
-        zn = torch.zeros_like(zn)
+        zn = torch.zeros_like(zn) * (1 - truncation) + zn * truncation
 
     return zn
 
