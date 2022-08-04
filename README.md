@@ -136,15 +136,15 @@ It is capable of editing real images directly. (with [HyperStyle](https://github
 
 ```
 @article{kwak2022injecting,
-  author    = {Kwak, Jeong-gi and Li, Yuanming and Yoon, Dongsik and Kim, Donghyeon and Han, David and Ko, Hanseok},
-  title     = {Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis},
-  journal   = {arXiv},
-  year      = {2022},
+  title={Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis},
+  author={Kwak, Jeong-gi and Li, Yuanming and Yoon, Dongsik and Kim, Donghyeon and Han, David and Ko, Hanseok},
+  journal={arXiv preprint arXiv:2207.10257},
+  year={2022}
 }
 ```
 
 ## Acknowledgments
 
--  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow).  
+-  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow) ([EigenGAN-pytorch](https://github.com/bryandlee/eigengan-pytorch)).  
 -  We used [pSp encoder](https://github.com/eladrich/pixel2style2pixel) and [StyleGAN2-pytorch](https://github.com/rosinality/stylegan2-pytorch) to build 3D-controllable StyleGAN. For editing (challenging) real images, we exploited [e4e](https://github.com/omertov/encoder4editing) and [HyperStyle](https://github.com/yuval-alaluf/hyperstyle) with our 3D-controllable StyleGAN. 
 
