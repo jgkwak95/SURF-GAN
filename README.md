@@ -1,6 +1,6 @@
 # Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis
 
-<img src="https://user-images.githubusercontent.com/67986601/180637964-d95b3228-bbf3-4dc5-8d30-7f18630ef858.png" width="90%">
+<img src="https://user-images.githubusercontent.com/67986601/191766555-806a304e-25a6-4d7d-9d48-ce623febe85f.png" width="90%">
 
 ## [Project page](https://jgkwak95.github.io/surfgan/) | [Paper](http://arxiv.org/abs/2207.10257)  
 <br>
@@ -39,21 +39,21 @@ pip install --no-cache-dir -r requirements.txt
 At first, look curriculum.py and specify dataset and training options.
 ```
 # CelebA
-python train_surf.py --output_dir your-exp-name
-		     --curriculum CelebA_single
+python train_surf.py --output_dir your-exp-name \
+--curriculum CelebA_single
 ```
 ### Pretrained model
-Pretrained model will be uploaded. 
+Or, you can use the [pretrianed model](https://drive.google.com/file/d/1twtS5-9CVzSEiLleY7qvJYd-R6G8f_Cg/view?usp=sharing)
 ## Semantic attribute discovery
 Let's traverse each dimension with discovered semantics:
 ```
-python discover_semantics.py  --experiment your-exp-name
-                              --image_size 256
-                              --ray_step_multiplier 2
-                              --num_id 9                     
-                              --traverse_range 3.0           
-                              --intermediate_points 9       
-                              --curriculum CelebA_single     
+python discover_semantics.py  --experiment your-exp-name \
+--image_size 256 \
+--ray_step_multiplier 2 \
+--num_id 9 \          
+--traverse_range 3.0 \    
+ --intermediate_points 9 \
+--curriculum CelebA_single     
 ```
 The default ckpt file to traverse is the latest file (generator.pth).
 If you want to check specific cpkt, add this in your command line, for example,
@@ -63,40 +63,40 @@ If you want to check specific cpkt, add this in your command line, for example,
 ## Control pose
 In addition, you can control only camera paramters:
 ```
-python control_pose.py --experiment your-exp-name
-                       --image_size 128
-                       --ray_step_multiplier 2
-                       --num_id 9
-                       --intermediate_points 9
-                       --mode yaw
-                       --curriculum CelebA_single  
+python control_pose.py --experiment your-exp-name \
+--image_size 128 \
+--ray_step_multiplier 2 \
+--num_id 9 \
+--intermediate_points 9 \
+--mode yaw \
+--curriculum CelebA_single \
 ```
 ## Render video
 - #### Moving camera
 Set the mode: yaw, pitch, fov, etc.
 You can also make your trajectory. 
 ```
-python render_video.py  --experiment your-exp-name
-                        --image_size 128
-                        --ray_step_multiplier 2
-                        --num_frames 100                         
-                        --curriculum CelebA_single  
-                        --mode yaw
+python render_video.py  --experiment your-exp-name \
+--image_size 128 \
+--ray_step_multiplier 2 \
+--num_frames 100 \
+--curriculum CelebA_single \
+--mode yaw
 ```
 
 - #### Moving camera with a specific semantic
 Choose an attribute that you want to control LiDj.
 ```
-python render_video_semantic.py  --experiment your-exp-name
-                                 --image_size 128
-                                 --ray_step_multiplier 2
-                                 --num_frames 100      
-                                 --traverse_range 3.0
-                                 --intermediate_points      
-                                 --curriculum CelebA_single  
-                                 --mode circle
-                                 --L 2
-                                 --D 4
+python render_video_semantic.py  --experiment your-exp-name \
+--image_size 128 \
+--ray_step_multiplier 2 \
+--num_frames 100 \ 
+--traverse_range 3.0 \
+--intermediate_points \
+--curriculum CelebA_single \
+--mode circle
+--L 2
+--D 4
 ```
 <br>
 <br>
@@ -145,6 +145,6 @@ It is capable of editing real images directly. (with [HyperStyle](https://github
 
 ## Acknowledgments
 
--  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow) ([EigenGAN-pytorch](https://github.com/bryandlee/eigengan-pytorch)).  
+-  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow) ([EigenGAN-pytorch](https://github.com/bryandlee/eigengan-pytorch)). Thanks to the authors for their excellent work!
 -  We used [pSp encoder](https://github.com/eladrich/pixel2style2pixel) and [StyleGAN2-pytorch](https://github.com/rosinality/stylegan2-pytorch) to build 3D-controllable StyleGAN. For editing (challenging) real images, we exploited [e4e](https://github.com/omertov/encoder4editing) and [HyperStyle](https://github.com/yuval-alaluf/hyperstyle) with our 3D-controllable StyleGAN. 
 
