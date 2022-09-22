@@ -13,7 +13,6 @@ import argparse
 from torchvision.utils import save_image
 from pytorch_fid import fid_score
 from tqdm import tqdm
-
 import datasets
 import curriculums
 
@@ -29,13 +28,13 @@ def output_real_images(dataloader, num_imgs, real_dir):
             save_image(img, os.path.join(real_dir, f'{img_counter:0>5}.jpg'), normalize=True, range=(-1, 1))
             img_counter += 1
 
-def setup_evaluation(dataset_name, generated_dir, target_size=128, num_imgs=8000):
+def setup_evaluation(dataset_name, generated_dir, target_size=128, num_imgs=2048, data_path=None):
     # Only make real images if they haven't been made yet
     real_dir = os.path.join('EvalImages', dataset_name + '_real_images_' + str(target_size))
     # real_dir = os.path.join('EvalImages', dataset_name + '_real_images') #+ str(target_size))
     if not os.path.exists(real_dir):
         os.makedirs(real_dir)
-        dataloader, CHANNELS = datasets.get_dataset(dataset_name, img_size=target_size)
+        dataloader, CHANNELS = datasets.get_dataset(dataset_name, img_size=target_size, dataset_path=data_path)
         print('outputting real images...')
         output_real_images(dataloader, num_imgs, real_dir)
         print('...done')
@@ -47,9 +46,8 @@ def setup_evaluation(dataset_name, generated_dir, target_size=128, num_imgs=8000
 
 def output_images(generator, input_metadata, rank, world_size, output_dir, num_imgs=2048):
     metadata = copy.deepcopy(input_metadata)
-    # metadata['img_size'] = 64
-    metadata['batch_size'] = 4
 
+    metadata['batch_size'] = metadata.get('batch_size', metadata['batch_size'])
     metadata['h_stddev'] = metadata.get('h_stddev_eval', metadata['h_stddev'])
     metadata['v_stddev'] = metadata.get('v_stddev_eval', metadata['v_stddev'])
     metadata['sample_dist'] = metadata.get('sample_dist_eval', metadata['sample_dist'])
@@ -63,11 +61,10 @@ def output_images(generator, input_metadata, rank, world_size, output_dir, num_i
     with torch.no_grad():
         while img_counter < num_imgs:
             z = torch.randn((metadata['batch_size'], 9, metadata["n_basis"]), device=generator.module.device)
-            # z = torch.randn((metadata['batch_size'], 9, metadata["n_basis"]*2), device=generator.module.device)
             z_noise = torch.randn((metadata['batch_size'], 1, 256), device=generator.module.device)
             metadata['img_size'] = 64
             generated_imgs, _ = generator.module.staged_forward(z, z_noise, **metadata)
-            # generated_imgs,_,  = generator.module.staged_forward(z, **metadata)
+
             for img in generated_imgs:
                 save_image(img, os.path.join(output_dir, f'{img_counter:0>5}.jpg'), normalize=True, range=(-1, 1))
                 img_counter += world_size

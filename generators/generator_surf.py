@@ -23,9 +23,6 @@ class ImplicitGenerator3d_SURF(nn.Module):
         self.device = device
         self.siren.device = device
 
-        # self.generate_avg_frequencies()
-        # self.generate_avg_w()
-
     def forward(self, z, z_noise, img_size, fov, ray_start, ray_end, num_steps, h_stddev, v_stddev, h_mean, v_mean,
                 hierarchical_sample, sample_dist=None, lock_view_dependence=False, **kwargs):
         """
@@ -343,8 +340,7 @@ class SinedLayer(nn.Module):
     def forward(self, x):
         x = self.layer(x)
         x = self.sine(x)
-        # freq = freq.unsqueeze(1).expand_as(x)
-        # phase_shift = phase_shift.unsqueeze(1).expand_as(x)
+
         return x
 
 class SinedLayer_noise(nn.Module):
@@ -357,8 +353,7 @@ class SinedLayer_noise(nn.Module):
         x = self.layer(x)
         x = x + noise * 0.01
         x = self.sine(x)
-        # freq = freq.unsqueeze(1).expand_as(x)
-        # phase_shift = phase_shift.unsqueeze(1).expand_as(x)
+
         return x
 
 
@@ -511,26 +506,22 @@ class SURFSIREN(nn.Module):
         self.color_layer_linear.apply(frequency_init(25))
         self.first_layer.apply(first_layer_film_sine_init)
 
-        self.gridwarper = UniformBoxWarp(
-            0.24)  # Don't worry about this, it was added to ensure compatibility with another model. Shouldn't affect performance.
+        self.gridwarper = UniformBoxWarp(0.24)
 
     def forward(self, input, z_all, noise, ray_directions, **kwargs):
 
-
         input = self.gridwarper(input)
         x = input
-
 
         zs = z_all[:, :-1, :]
         zn = noise
 
         x = self.first_layer(x, zn)
 
-        for block, z in zip(self.blocks, zs.permute(1,0,2)):
+        for block, z in zip(self.blocks, zs.permute(1, 0, 2)):
             x = block(z, x)
 
-
-        rgb = self.color_layer_sine(z_all[:,self.n_blocks,:], torch.cat([ray_directions,x], dim=-1 ))
+        rgb = self.color_layer_sine(z_all[:, self.n_blocks, :], torch.cat([ray_directions, x], dim=-1))
         rgb = torch.sigmoid(self.color_layer_linear(rgb))
 
         sigma = self.final_layer(x)
@@ -541,9 +532,9 @@ class SURFSIREN(nn.Module):
 
         zs = torch.randn(batch, self.n_blocks, self.n_basis, device=self.device)
         if truncation < 1.0:
-
             zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
         return zs
+
     def sample(self, batch: int, truncation=1.0, **kwargs):
         return self.forward(self.sample_latent(batch, truncation=truncation), **kwargs)
 

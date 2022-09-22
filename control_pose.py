@@ -4,46 +4,28 @@ import numpy as np
 import os
 import torch
 import curriculums
-# import tqdm
+from torch_ema import ExponentialMovingAverage
 from tqdm import tqdm
 from PIL import Image
+from util import  sample_noise, sample_latent, load_ema_dict
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
-def sample_latents(batch: int, truncation=1.0):
-
-
-    zs = torch.randn(batch, 9, 6, device=device)
-    if truncation < 1.0:
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-
-    return zs
-
-def sample_noise(shape,  device):
-
-    zn = torch.randn(shape, device=device)
-    if truncation < 1.0:
-        zn = torch.zeros_like(zn) * (1 - truncation) + zn * truncation
-
-    return zn
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
 
-    parser.add_argument('--experiment', type=str, required=True)
+    parser.add_argument('--experiment', type=str, default='CelebA')
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=256)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
-    parser.add_argument('--curriculum', type=str, default='CelebA')
+    parser.add_argument('--curriculum', type=str, default='CelebA_single')
     parser.add_argument('--num_id', type=int, default=8)
     parser.add_argument('--intermediate_points', type=int, default=9)
     parser.add_argument('--specific_ckpt', type=str, default=None)
-    parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--mode', type=str, default='yaw')
-    parser.add_argument('--use_trunc', type=bool, default=True)
     parser.add_argument('--depth_map', action='store_true')
 
     opt = parser.parse_args()
@@ -57,7 +39,6 @@ if __name__ == '__main__':
     curriculum = getattr(curriculums, opt.curriculum)
     curriculum['num_steps'] = curriculum[0]['num_steps'] * opt.ray_step_multiplier
     curriculum['img_size'] = opt.image_size
-    curriculum['psi'] = 0.7
     curriculum['lock_view_dependence'] = opt.lock_view_dependence
     curriculum['h_mean'] = yaw
     curriculum['v_mean'] = pitch
@@ -75,13 +56,21 @@ if __name__ == '__main__':
     else:
         g_path =  f'./{opt.experiment}/generator.pth'
 
-    ##
+    ### Load
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
-    ema = torch.load(ema_file)
+
+    ema_f = torch.load(ema_file)
+    if isinstance(ema_f, dict):
+        ema = ExponentialMovingAverage(generator.parameters(), decay=0.999)
+        load_ema_dict(ema, ema_f)
+    else:
+        ema = ema_f
+
     ema.copy_to(generator.parameters())
     generator.set_device(device)
     generator.eval()
+
 
     save_dir = f'./result/{opt.experiment}/pose'
 
@@ -89,11 +78,10 @@ if __name__ == '__main__':
         os.makedirs(save_dir)
 
     intermediate_points = opt.intermediate_points
-    truncation = opt.psi
     num_id = opt.num_id
     mode = opt.mode
 
-    zs = sample_latents(num_id, truncation=opt.psi)
+    zs = sample_latent((num_id, 9, 6), device=device)
     z_noise = sample_noise((num_id, 1, 256), device=device)
 
 

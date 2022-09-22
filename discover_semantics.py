@@ -4,44 +4,24 @@ import numpy as np
 import os
 import torch
 import curriculums
-
+from torch_ema import ExponentialMovingAverage
 from PIL import Image
-
+from util import  sample_noise, sample_latent, load_ema_dict
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
-def sample_latents(batch: int, truncation=1.0):
-
-
-    zs = torch.randn(batch, 9, 6, device=device)
-    if truncation < 1.0:
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-
-    return zs
-
-def sample_noise(shape,  device):
-
-    zn = torch.randn(shape, device=device)
-    # zn = torch.zeros_like(shape, device=device) # no noise
-    return zn
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-
-
-    parser.add_argument('--experiment', type=str, required=True)
+    parser.add_argument('--experiment', type=str, default='CelebA')
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=256)
-    parser.add_argument('--ray_step_multiplier', type=int, default=4)
+    parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
     parser.add_argument('--specific_ckpt', type=str, default=None)
-    parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--num_id', type=int, default=8)
     parser.add_argument('--intermediate_points', type=int, default=9)
-    parser.add_argument('--traverse_range', type=float, default=3.0)
-    parser.add_argument('--use_trunc', type=bool, default=True)
+    parser.add_argument('--traverse_range', type=float, default=2.0)
     opt = parser.parse_args()
 
 
@@ -53,7 +33,6 @@ if __name__ == '__main__':
     curriculum = getattr(curriculums, opt.curriculum)
     curriculum['num_steps'] = curriculum[0]['num_steps'] * opt.ray_step_multiplier
     curriculum['img_size'] = opt.image_size
-    curriculum['psi'] = 0.7
     curriculum['lock_view_dependence'] = opt.lock_view_dependence
     curriculum['h_mean'] = yaw
     curriculum['v_mean'] = pitch
@@ -70,10 +49,18 @@ if __name__ == '__main__':
     else:
         g_path =  f'./{opt.experiment}/generator.pth'
 
-    ##
+
+    ### Load
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
-    ema = torch.load(ema_file)
+
+    ema_f = torch.load(ema_file)
+    if isinstance(ema_f, dict):
+        ema = ExponentialMovingAverage(generator.parameters(), decay=0.999)
+        load_ema_dict(ema, ema_f)
+    else:
+        ema = ema_f
+
     ema.copy_to(generator.parameters())
     generator.set_device(device)
     generator.eval()
@@ -87,18 +74,12 @@ if __name__ == '__main__':
     traverse_range = opt.traverse_range
     intermediate_points = opt.intermediate_points
     num_id = opt.num_id
-    truncation = opt.psi
 
-    zs = sample_latents(num_id, truncation=opt.psi)
+    zs = sample_latent((num_id, 9, 6), device)
     z_noise = sample_noise((num_id, 1, 256), device=device)
     _, n_layers, n_dim = zs.shape
 
     offsets = np.linspace(-traverse_range, traverse_range, intermediate_points)
-
-
-#############################################################
-#############################################################
-# Traverse
 
     for i_layer in range(n_layers):
         for i_dim in range(n_dim):
@@ -117,6 +98,3 @@ if __name__ == '__main__':
             Image.fromarray(imgs).save(
                 os.path.join(save_dir, f"traverse_L{i_layer}_D{i_dim}.png")
             )
-
-############################################################
-############################################################

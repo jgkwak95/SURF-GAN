@@ -1,16 +1,13 @@
 import argparse
 import math
-import os
 
-from torchvision.utils import save_image
-
-import torch
-import numpy as np
 from PIL import Image
 from tqdm import tqdm
 import numpy as np
 import skvideo.io
 import curriculums
+from torch_ema import ExponentialMovingAverage
+from util import *
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -20,34 +17,16 @@ def tensor_to_PIL(img):
     img = img.squeeze() * 0.5 + 0.5
     return Image.fromarray(img.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy())
 
-
-
-def sample_latents(batch: int, truncation=1.0):
-
-
-    zs = torch.randn(batch, 9, 6, device=device)
-    if truncation < 1.0:
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-    return zs
-
-def sample_noise(shape,  device, truncation=1.0):
-
-    # zn = torch.randn(shape, device=device)
-    zn = torch.zeros(shape, device=device) # for inference
-    return zn
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--seed', type=int, default=22)
-    parser.add_argument('--experiment', type=str, required=True)
+    parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--experiment', type=str, default='CelebA')
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=128)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
     parser.add_argument('--specific_ckpt', type=str, default=None)
-    parser.add_argument('--psi', type=float, default=0.7)
-    parser.add_argument('--traverse_range', type=float, default=6.0)
-    parser.add_argument('--use_trunc', type=bool, default=True)
+    parser.add_argument('--traverse_range', type=float, default=2.0)
     parser.add_argument('--L', type=int, required=True)
     parser.add_argument('--D', type=int, required=True)
     parser.add_argument('--num_frames', type=int, default=100)
@@ -62,7 +41,6 @@ if __name__ == '__main__':
     curriculum = getattr(curriculums, opt.curriculum)
     curriculum['num_steps'] = curriculum[0]['num_steps'] * opt.ray_step_multiplier
     curriculum['img_size'] = opt.image_size
-    curriculum['psi'] = 0.7
     curriculum['lock_view_dependence'] = opt.lock_view_dependence
     curriculum['h_mean'] = yaw
     curriculum['v_mean'] = pitch
@@ -79,9 +57,17 @@ if __name__ == '__main__':
         g_path =  f'./{opt.experiment}/generator.pth'
 
     ##
+    ### Load
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
-    ema = torch.load(ema_file)
+
+    ema_f = torch.load(ema_file)
+    if isinstance(ema_f, dict):
+        ema = ExponentialMovingAverage(generator.parameters(), decay=0.999)
+        load_ema_dict(ema, ema_f)
+    else:
+        ema = ema_f
+
     ema.copy_to(generator.parameters())
     generator.set_device(device)
     generator.eval()
@@ -94,7 +80,6 @@ if __name__ == '__main__':
     traverse_range = opt.traverse_range
     num_frames = opt.num_frames
     mode = opt.mode
-    truncation = opt.psi
 
 
 
@@ -108,7 +93,7 @@ if __name__ == '__main__':
             pitch = math.pi/2
             yaw = -0.7 * np.cos(t * math.pi) + math.pi / 2
             fov = 12
-            offset = t * traverse_range
+            offset = traverse_range  * np.sin(t * math.pi)
             trajectory.append((pitch, yaw, fov, offset))
 
     elif mode == 'pitch':
@@ -117,7 +102,7 @@ if __name__ == '__main__':
             pitch = -0.4 * np.cos(t * math.pi) + math.pi / 2
             yaw = math.pi/2
             fov = 12
-            offset = t * traverse_range
+            offset = traverse_range  * np.sin(t * math.pi)
             trajectory.append((pitch, yaw, fov, offset))
 
     elif mode == 'yaw_pitch':
@@ -126,7 +111,7 @@ if __name__ == '__main__':
             pitch = 0.4 * np.sin( t  * math.pi) + math.pi / 2
             yaw = -0.7 * np.cos(t * math.pi) + math.pi / 2
             fov = 12
-            offset = t * traverse_range
+            offset = traverse_range  * np.sin(t * math.pi)
             trajectory.append((pitch, yaw, fov, offset))
 
     elif mode == 'fov':
@@ -135,7 +120,7 @@ if __name__ == '__main__':
             pitch = math.pi/2
             yaw = math.pi/2
             fov = 9 + t * 6
-            offset = t * traverse_range
+            offset = traverse_range  * np.sin(t * math.pi)
             trajectory.append((pitch, yaw, fov, offset))
 
     elif mode == 'static':
@@ -145,7 +130,7 @@ if __name__ == '__main__':
             yaw = math.pi/2
             fov = 12
 
-            offset = -0.3 + traverse_range * np.sin(t * math.pi)
+            offset = traverse_range  * np.sin(t * math.pi)
             trajectory.append((pitch, yaw, fov, offset))
 
     elif mode == 'circle':
@@ -154,8 +139,8 @@ if __name__ == '__main__':
             yaw = 0.35 * np.sin(t * 4*  math.pi) + math.pi / 2
             fov = 12
 
-            offset = traverse_range / 2 - np.abs(traverse_range * (t - 0.5))
-
+            # offset = traverse_range / 2 + np.abs(traverse_range * (t - 0.5))
+            offset = traverse_range  * np.sin(t * math.pi)
 
             trajectory.append((pitch, yaw, fov, offset))
 
@@ -168,7 +153,7 @@ if __name__ == '__main__':
     seed = opt.seed
     torch.manual_seed(seed)
 
-    zs = sample_latents(1, truncation=opt.psi)
+    zs = sample_latent((1, 9, 6), device=device)
     z_noise = sample_noise((1, 1, 256), device=device)
     _, n_layers, n_dim = zs.shape
 

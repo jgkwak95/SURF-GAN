@@ -60,8 +60,9 @@ class FFHQ(Dataset):
 
 
 
-def get_dataset(name, subsample=None, batch_size=1, **kwargs):
-    dataset = globals()[name](**kwargs)
+def get_dataset(name, subsample=None, batch_size=1, dataset_path=None, img_size=64):
+
+    dataset = globals()[name](dataset_path=dataset_path, img_size=img_size)
 
     dataloader = torch.utils.data.DataLoader(
         dataset,

@@ -7,10 +7,9 @@ import torch.multiprocessing as mp
 import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torchvision.utils import save_image
-
+from util import setup, cleanup, sample_latent, sample_noise
 from generators import generator_surf
 from generators.generator_surf import *
-
 
 from discriminators import sgdiscriminators
 
@@ -25,49 +24,6 @@ import copy
 
 from torch_ema import ExponentialMovingAverage
 
-def setup(rank, world_size, port):
-    os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = port
-
-    # initialize the process group
-    dist.init_process_group("gloo", rank=rank, world_size=world_size)
-
-
-def cleanup():
-    dist.destroy_process_group()
-
-def load_images(images, curriculum, device):
-    return_images = []
-    head = 0
-    for stage in curriculum['stages']:
-        stage_images = images[head:head + stage['batch_size']]
-        stage_images = F.interpolate(stage_images, size=stage['img_size'],  mode='bilinear', align_corners=True)
-        return_images.append(stage_images)
-        head += stage['batch_size']
-    return return_images
-
-def sample_latent(shape,  device, truncation=1.0):
-
-    zs = torch.randn(shape, device=device)
-    if truncation < 1.0:
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-    return zs
-
-def z_sampler(shape, device, dist):
-    if dist == 'gaussian':
-        z = torch.randn(shape, device=device)
-    elif dist == 'uniform':
-        z = torch.rand(shape, device=device) * 2 - 1
-    return z
-
-
-def sample_noise(shape,  device, truncation=1.0):
-
-    zs = torch.randn(shape, device=device)
-    if truncation < 1.0:
-        zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
-
-    return zs
 
 def train(rank, world_size, opt):
 
@@ -382,9 +338,9 @@ def train(rank, world_size, opt):
                 generated_dir = os.path.join(opt.output_dir, 'evaluation/generated')
 
                 if rank == 0:
-                    # fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir, target_size=metadata['img_size'])
-                    fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir,
-                                                    target_size=metadata['img_size'])
+                    fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir, target_size=metadata['img_size'], data_path=metadata['dataset_path'])
+                    # fid_evaluation.setup_evaluation(metadata['dataset'], generated_dir,
+                    #                                 **metadata)
                 dist.barrier()
                 ema.store(generator_ddp.parameters())
                 ema.copy_to(generator_ddp.parameters())
@@ -393,9 +349,8 @@ def train(rank, world_size, opt):
                 ema.restore(generator_ddp.parameters())
                 dist.barrier()
                 if rank == 0:
-                    # fid = fid_evaluation.calculate_fid(metadata['dataset'], generated_dir, target_size=metadata['img_size'])
-                    fid = fid_evaluation.calculate_fid(metadata['dataset'], generated_dir,
-                                                       target_size=metadata['img_size'])
+                    fid = fid_evaluation.calculate_fid(metadata['dataset'], generated_dir, target_size=metadata['img_size'])
+
                     with open(os.path.join(opt.output_dir, f'fid.txt'), 'a') as f:
                         f.write(f'\n{discriminator.step+1}:{fid}')
 
