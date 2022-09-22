@@ -43,7 +43,7 @@ python train_surf.py --output_dir your-exp-name \
 --curriculum CelebA_single
 ```
 ### Pretrained model
-Or, you can use the [pretrianed model](https://drive.google.com/file/d/1twtS5-9CVzSEiLleY7qvJYd-R6G8f_Cg/view?usp=sharing)
+Or, you can use the [pretrained model](https://drive.google.com/file/d/1twtS5-9CVzSEiLleY7qvJYd-R6G8f_Cg/view?usp=sharing).
 ## Semantic attribute discovery
 Let's traverse each dimension with discovered semantics:
 ```
@@ -146,5 +146,5 @@ It is capable of editing real images directly. (with [HyperStyle](https://github
 ## Acknowledgments
 
 -  SURF-GAN is bulided upon the [pi-GAN](https://github.com/marcoamonteiro/pi-GAN) implementation and inspired by [EigenGAN](https://github.com/LynnHo/EigenGAN-Tensorflow) ([EigenGAN-pytorch](https://github.com/bryandlee/eigengan-pytorch)). Thanks to the authors for their excellent work!
--  We used [pSp encoder](https://github.com/eladrich/pixel2style2pixel) and [StyleGAN2-pytorch](https://github.com/rosinality/stylegan2-pytorch) to build 3D-controllable StyleGAN. For editing (challenging) real images, we exploited [e4e](https://github.com/omertov/encoder4editing) and [HyperStyle](https://github.com/yuval-alaluf/hyperstyle) with our 3D-controllable StyleGAN. 
+-  We used [pSp encoder](https://github.com/eladrich/pixel2style2pixel) and [StyleGAN2-pytorch](https://github.com/rosinality/stylegan2-pytorch) to build 3D-controllable StyleGAN. For editing  in-the-wild real images, we exploited [e4e](https://github.com/omertov/encoder4editing) and [HyperStyle](https://github.com/yuval-alaluf/hyperstyle) with our 3D-controllable StyleGAN. 
 
