@@ -535,6 +535,3 @@ class SURFSIREN(nn.Module):
             zs = torch.zeros_like(zs) * (1 - truncation) + zs * truncation
         return zs
 
-    def sample(self, batch: int, truncation=1.0, **kwargs):
-        return self.forward(self.sample_latent(batch, truncation=truncation), **kwargs)
-

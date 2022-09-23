@@ -53,55 +53,6 @@ class StridedResidualConvBlock(nn.Module):
         y = (y + identity)/math.sqrt(2)
         return y
 
-class StridedDiscriminator(nn.Module):
-    def __init__(self, **kwargs): # from 4 * 2^0 to 4 * 2^7 4 -> 512
-        super().__init__()
-        self.epoch = 0
-        self.step = 0
-        self.layers = nn.ModuleList(
-        [
-            StridedResidualConvBlock(32, 64), # 6 256x256 -> 128x128
-            StridedResidualConvBlock(64, 128), # 5 128x128 -> 64x64
-            StridedResidualConvBlock(128, 256), # 4 64x64 -> 32x32
-            StridedResidualConvBlock(256, 400), # 3 32x32 -> 16x16
-            StridedResidualConvBlock(400, 400), # 2 16x16 -> 8x8
-            StridedResidualConvBlock(400, 400), # 1 8x8 -> 4x4
-            StridedResidualConvBlock(400, 400), # 7 4x4 -> 2x2
-        ])
-
-        self.fromRGB = nn.ModuleList(
-        [
-            AdapterBlock(32),
-            AdapterBlock(64),
-            AdapterBlock(128),
-            AdapterBlock(256),
-            AdapterBlock(400),
-            AdapterBlock(400),
-            AdapterBlock(400),
-            AdapterBlock(400)
-        ])
-        self.final_layer = nn.Conv2d(400, 1, 2)
-        self.img_size_to_layer = {2:7, 4:6, 8:5, 16:4, 32:3, 64:2, 128:1, 256:0}
-
-        self.pose_layer = nn.Linear(2, 400)
-
-
-    def forward(self, input, alpha, options=None, **kwargs):
-        start = self.img_size_to_layer[input.shape[-1]]
-        x = self.fromRGB[start](input)
-
-        if kwargs.get('instance_noise', 0) > 0:
-            x = x + torch.randn_like(x) * kwargs['instance_noise']
-
-        for i, layer in enumerate(self.layers[start:]):
-            if i == 1 and alpha < 1:
-                x = alpha * x + (1 - alpha) * self.fromRGB[start+1](F.interpolate(input, scale_factor=0.5, mode='nearest'))
-
-            x = layer(x)
-
-        x = self.final_layer(x).reshape(x.shape[0], 1)
-
-        return x, None, None
 
 
 class ResidualCCBlock(nn.Module):
