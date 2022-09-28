@@ -130,7 +130,7 @@ CelebA_single = {
     int(60e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 64, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
     int(200e3): {},
 
-    'dataset_path': 'dataset/img_align_celeba/*.jpg',
+    'dataset_path': '../dataset/img_align_celeba/*.jpg',
     'fov': 12,
     'ray_start': 0.88,
     'ray_end': 1.12,

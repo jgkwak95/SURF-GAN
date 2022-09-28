@@ -94,8 +94,8 @@ python render_video_semantic.py  --experiment your-exp-name \
 --traverse_range 3.0 \
 --intermediate_points \
 --curriculum CelebA_single \
---mode circle \
---L 2 \
+--mode circle
+--L 2
 --D 4
 ```
 <br>

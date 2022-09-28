@@ -147,8 +147,8 @@ def train(rank, world_size, opt):
             if discriminator.step % opt.model_save_interval == 0 and rank == 0:
                 now = datetime.now()
                 now = now.strftime("%d--%H:%M--")
-                torch.save(ema, os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_ema.pth'))
-                torch.save(ema2, os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_ema2.pth'))
+                torch.save(ema.state_dict(), os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_ema.pth'))
+                torch.save(ema2.state_dict(), os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_ema2.pth'))
                 torch.save(generator_ddp.module, os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_generator.pth'))
                 torch.save(discriminator_ddp.module, os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_discriminator.pth'))
                 torch.save(optimizer_G.state_dict(), os.path.join(opt.output_dir, str(discriminator.step)+'_'+str(metadata['img_size']) + '_optimizer_G.pth'))
@@ -324,8 +324,8 @@ def train(rank, world_size, opt):
                     ema.restore(generator_ddp.parameters())
 
                 if discriminator.step % opt.sample_interval == 0:
-                    torch.save(ema, os.path.join(opt.output_dir, 'ema.pth'))
-                    torch.save(ema2, os.path.join(opt.output_dir, 'ema2.pth'))
+                    torch.save(ema.state_dict(), os.path.join(opt.output_dir, 'ema.pth'))
+                    torch.save(ema2.state_dict(), os.path.join(opt.output_dir, 'ema2.pth'))
                     torch.save(generator_ddp.module, os.path.join(opt.output_dir, 'generator.pth'))
                     torch.save(discriminator_ddp.module, os.path.join(opt.output_dir, 'discriminator.pth'))
                     torch.save(optimizer_G.state_dict(), os.path.join(opt.output_dir, 'optimizer_G.pth'))

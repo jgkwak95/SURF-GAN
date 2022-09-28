@@ -9,7 +9,7 @@ scikit-video
 scipy
 tensorboard
 tensorboard-plugin-wit
-torch-ema @ git+https://github.com/fadel/pytorch_ema@3950a7b5c4b88f46fd14f620277bad21898597a9
+torch-ema==0.3
 torch-fidelity
 torchmetrics
 tqdm

@@ -7,7 +7,7 @@ import curriculums
 from torch_ema import ExponentialMovingAverage
 from tqdm import tqdm
 from PIL import Image
-from util import  sample_noise, sample_latent, load_ema_dict
+from util import sample_latent
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,13 +17,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
 
-    parser.add_argument('--experiment', type=str, default='CelebA')
+    parser.add_argument('--experiment', type=str, default='CelebA_surf')
     parser.add_argument('--lock_view_dependence', action='store_true')
     parser.add_argument('--image_size', type=int, default=256)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
     parser.add_argument('--num_id', type=int, default=8)
     parser.add_argument('--intermediate_points', type=int, default=9)
+    parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--specific_ckpt', type=str, default=None)
     parser.add_argument('--mode', type=str, default='yaw')
     parser.add_argument('--depth_map', action='store_true')
@@ -59,18 +60,13 @@ if __name__ == '__main__':
     ### Load
     generator = torch.load(g_path, map_location=torch.device(device))
     ema_file = g_path.split('generator')[0] + 'ema.pth'
-
     ema_f = torch.load(ema_file)
-    if isinstance(ema_f, dict):
-        ema = ExponentialMovingAverage(generator.parameters(), decay=0.999)
-        load_ema_dict(ema, ema_f)
-    else:
-        ema = ema_f
 
+    ema = ExponentialMovingAverage(generator.parameters(), decay=0.999)
+    ema.load_state_dict(ema_f)
     ema.copy_to(generator.parameters())
     generator.set_device(device)
     generator.eval()
-
 
     save_dir = f'./result/{opt.experiment}/pose'
 
@@ -81,8 +77,8 @@ if __name__ == '__main__':
     num_id = opt.num_id
     mode = opt.mode
 
-    zs = sample_latent((num_id, 9, 6), device=device)
-    z_noise = sample_noise((num_id, 1, 256), device=device)
+    zs = sample_latent((num_id, 9, 6), device=device, truncation=opt.psi)
+    z_noise = torch.zeros((num_id, 1, 256), device=device)
 
 
 ############################################################
@@ -140,6 +136,7 @@ if __name__ == '__main__':
             curriculum['v_stddev'] = 0
 
             img = generator.staged_forward(zs, z_noise, **curriculum)[0]
+
             img = torch.cat([_img for _img in img], dim=1)
             imgs_pose.append(img)
     imgs = torch.cat(imgs_pose, dim=2)

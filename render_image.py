@@ -5,24 +5,28 @@ import os
 import torch
 import curriculums
 from torch_ema import ExponentialMovingAverage
+from tqdm import tqdm
 from PIL import Image
-from util import  sample_latent
+from util import   sample_latent
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
+
     parser.add_argument('--experiment', type=str, default='CelebA_surf')
     parser.add_argument('--lock_view_dependence', action='store_true')
-    parser.add_argument('--image_size', type=int, default=256)
+    parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--image_size', type=int, default=128)
+    parser.add_argument('--psi', type=float, default=0.7)
     parser.add_argument('--ray_step_multiplier', type=int, default=2)
     parser.add_argument('--curriculum', type=str, default='CelebA_single')
     parser.add_argument('--specific_ckpt', type=str, default=None)
-    parser.add_argument('--num_id', type=int, default=11)
-    parser.add_argument('--intermediate_points', type=int, default=15)
-    parser.add_argument('--traverse_range', type=float, default=2.0)
-    parser.add_argument('--psi', type=float, default=0.7)
+    parser.add_argument('--depth_map', action='store_true')
+
     opt = parser.parse_args()
 
 
@@ -45,12 +49,11 @@ if __name__ == '__main__':
     curriculum['feat_dim'] = 512
     curriculum = {key: value for key, value in curriculum.items() if type(key) is str}
 
+
     if opt.specific_ckpt is not None:
         g_path = f'./{opt.experiment}/{opt.specific_ckpt}'
     else:
         g_path =  f'./{opt.experiment}/generator.pth'
-
-
 
     ### Load
     generator = torch.load(g_path, map_location=torch.device(device))
@@ -63,36 +66,31 @@ if __name__ == '__main__':
     generator.set_device(device)
     generator.eval()
 
-    save_dir = f'./result/{opt.experiment}/semantic'
+
+    save_dir = f'./result/{opt.experiment}/img'
+
+    seed = opt.seed
+    torch.manual_seed(seed)
 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
+    zs = sample_latent((1, 9, 6), device=device, truncation=opt.psi)
+    z_noise = torch.zeros((1, 1, 256), device=device)
 
-    traverse_range = opt.traverse_range
-    intermediate_points = opt.intermediate_points
-    num_id = opt.num_id
 
-    zs = sample_latent((num_id, 9, 6), device, opt.psi)
-    z_noise = torch.zeros((num_id, 1, 256), device=device)
-    _, n_layers, n_dim = zs.shape
 
-    offsets = np.linspace(-traverse_range, traverse_range, intermediate_points)
+    with torch.no_grad():
 
-    for i_layer in range(n_layers):
-        for i_dim in range(n_dim):
-            print(f"  layer {i_layer} - dim {i_dim}")
-            imgs = []
-            for offset in offsets:
-                _zs = zs.clone()
-                _zs[:, i_layer, i_dim] = offset
-                with torch.no_grad():
-                    img = generator.staged_forward(_zs, z_noise, **curriculum)[0]
-                    img = torch.cat([_img for _img in img], dim=1)
-                imgs.append(img)
-            imgs = torch.cat(imgs, dim=2)
+        curriculum['h_mean'] = yaw
+        curriculum['v_mean'] = pitch
+        curriculum['fov'] = fov
+        curriculum['h_stddev'] = 0
+        curriculum['v_stddev'] = 0
 
-            imgs = (imgs.permute(1, 2, 0).numpy() * 127.5 + 127.5).astype(np.uint8)
-            Image.fromarray(imgs).save(
-                os.path.join(save_dir, f"traverse_L{i_layer}_D{i_dim}.png")
-            )
+        img = generator.staged_forward(zs, z_noise, **curriculum)[0]
+        img = (img.squeeze(0).permute(1, 2, 0).numpy() * 127.5 + 127.5).astype(np.uint8)
+        Image.fromarray(img).save(os.path.join(save_dir, f"result_{seed}.png"))
+
+###################################################################
+####################################################################
