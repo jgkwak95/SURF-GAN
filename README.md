@@ -135,11 +135,13 @@ It is capable of editing real images directly. (with [HyperStyle](https://github
 
 
 ```
-@article{kwak2022injecting,
+@inproceedings{kwak2022injecting,
   title={Injecting 3D Perception of Controllable NeRF-GAN into StyleGAN for Editable Portrait Image Synthesis},
   author={Kwak, Jeong-gi and Li, Yuanming and Yoon, Dongsik and Kim, Donghyeon and Han, David and Ko, Hanseok},
-  journal={arXiv preprint arXiv:2207.10257},
-  year={2022}
+  booktitle={European Conference on Computer Vision},
+  pages={236--253},
+  year={2022},
+  organization={Springer}
 }
 ```
 
