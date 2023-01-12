@@ -126,7 +126,7 @@ CelebA = {
 ###-----------------
 CelebA_single = {
 
-    0: {'batch_size': 14, 'num_steps': 12, 'img_size': 32, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
+    0: {'batch_size': 56, 'num_steps': 12, 'img_size': 32, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 1e-4},
     int(60e3): {'batch_size': 14, 'num_steps': 12, 'img_size': 64, 'batch_split': 1, 'gen_lr': 6e-5, 'disc_lr': 5e-5},
     int(200e3): {},
 
