@@ -43,7 +43,7 @@ python train_surf.py --output_dir your-exp-name \
 --curriculum CelebA_single
 ```
 ### Pretrained model
-Or, you can use the [pretrained model](https://drive.google.com/file/d/1twtS5-9CVzSEiLleY7qvJYd-R6G8f_Cg/view?usp=sharing).
+Or, you can use the [pretrained model](https://drive.google.com/file/d/19ufd6VGQ4pR2AOEMBDFwvS9seZ-C6-8U/view?usp=sharing).
 ## Semantic attribute discovery
 Let's traverse each dimension with discovered semantics:
 ```
